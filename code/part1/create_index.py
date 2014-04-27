@@ -8,7 +8,11 @@ def main():
 	index = {}
 	# Inverted Index Structure
 	#	{
-	#		"word": [(business_id, review_id, positions)]
+	#		"word": {
+	#			"business_id": {
+	#				"review_id": [positions]
+	#			}
+	#		}
 	#	}
 	
 	review_file = sys.argv[1]
@@ -40,10 +44,14 @@ def main():
 					word = stemmed_dict[word]
 				word = word.encode('utf-8')
 				if word not in index:
-					index[word] = [(business, n, i)]
+					index[word] = {business:{n: [i]}}
+				elif business not in index[word]:
+					index[word][business] = {n:[i]}
+				elif n not in index[word][business]:
+					index[word][business][n] = [i]
 				else:
-					index[word].append((business, n, i))
-	print index
+					index[word][business][n].append([i])
+	print json.dumps(index)
 
 if __name__ == '__main__':
 	main()
