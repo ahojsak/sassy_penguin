@@ -23,7 +23,6 @@ def main():
 			#phrase query
 			line.replace('"', '')
 			words = line.strip().split()
-			businesses_temp = {x:0 for x in inverted_index[words[0]]}
 			#TODO - finish
 		
 		# one word / free text queries
