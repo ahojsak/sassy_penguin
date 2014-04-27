@@ -1,5 +1,4 @@
 import sys
-<<<<<<< HEAD
 import math
 
 
@@ -15,9 +14,35 @@ def main():
 		data = json.loads(line.replace("\n",""))
 		business_index[data['business_id']] = data
 
+	stopfile = open(sys.argv[3])
+	stopwords = [line.strip() for line in stopfile]
+
 	for line in sys.stdin:
-		# answer each query
-		print line
+		businesses = []
+		if line[0] == '"' and line[len(line)-1] == '"':
+			#phrase query
+			line.replace('"', '')
+			words = line.strip().split()
+			businesses_temp = {x:0 for x in inverted_index[words[0]]}
+			#TODO - finish
+		
+		# one word / free text queries
+		else:
+			words = line.strip().split()
+			ignored = 0
+			businesses_temp = {x:0 for x in inverted_index[words[0]]}
+			for w in words:
+				if w not in stopwords:
+					for b in inverted_index[w]:
+						businesses_temp += 1
+				else:
+					ignored += 1
+			# find the businesses whose reviews contained all the words
+			for k, v in enumerate(businesses_temp):
+				if v == (len(words) - ignored):
+					businesses.append(k)
+			
+		return rank(businesses, words)	
 
 
 def rank(businesses, words):
@@ -37,11 +62,12 @@ def rank(businesses, words):
 
 			idf = math.log(total_reviews / relevant_reviews)
 			tfidf[b] += tf * idf
+			#TODO - add other heuristics 
 	
+	#TODO - sort tfidf dict by values and then figure out what we actually want to return
 	return scores
 
 
 if __name__ == '__main__':
-	f = open(review_file)
 	main()
 
