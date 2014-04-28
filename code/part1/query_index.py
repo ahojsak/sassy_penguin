@@ -31,7 +31,27 @@ def main():
 		if line[0] == '"' and line[len(line)-1] == '"':
 			line.replace('"', '')
 			words = line.strip().split()
-			#TODO - finish
+			first = words[0]
+			ignored = 0
+			while first in stopwords:
+				ignored += 1
+				first = words[ignored]
+			if first in inverted_index:
+				for b in inverted_index[first]:
+					for r in inverted_index[first][b]:
+						for p in inverted_index[first][b][r]:
+							count = 1
+							position = p
+							for x in range(ignored + 1, len(words)):
+								if words[x] not in stopwords and words[x] in inverted_index:
+									if (position + 1) in inverted_index[words[x]][b][r]:
+										count += 1
+										position += 1
+									elif words[x] in stopwords:
+										ignored += 1
+							if count == (len(words) - ignored):
+								businesses.append(b)
+
 		
 		# one word / free text queries
 		else:
@@ -45,7 +65,7 @@ def main():
 						if b not in businesses_temp:
 							businesses_temp[b] = 0
 						businesses_temp[b] += 1
-				elif w not in stopwords:
+				elif w in stopwords:
 					ignored += 1
 			
 			# find the businesses whose reviews contained all the words
@@ -64,6 +84,7 @@ def main():
 
 def rank(businesses, words):
 	score = {x: 0 for x in businesses}
+	# TODO - deal with words in stopwords
 	for w in words:
 		for b in businesses:
 			reviews = inverted_index[w][b]
