@@ -34,10 +34,13 @@ def main():
 		else:
 			words = line.strip().split()
 			ignored = 0
-			businesses_temp = {x:0 for x in inverted_index[words[0]]}
+			businesses_temp = {}
+			
 			for w in words:
 				if w not in stopwords:
 					for b in inverted_index[w]:
+						if b not in businesses_temp:
+							businesses_temp[b] = 0
 						businesses_temp[b] += 1
 				else:
 					ignored += 1
@@ -47,8 +50,7 @@ def main():
 				if v == (len(words) - ignored):
 					businesses.append(k)
 		print 'matches',businesses
-		line = sys.stdin.readline()	
-		#return rank(businesses, words)	
+		line = sys.stdin.readline()		
 
 
 def rank(businesses, words):
