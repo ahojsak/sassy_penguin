@@ -1,31 +1,34 @@
 import sys
 import math
 import json
+import operator
+
+# Read in inverted index file, business data file, and stopword file
+print 'Processing Inverted Index...'
+inverted_index_file = open(sys.argv[1])
+inverted_index = json.loads(inverted_index_file.readline())
+
+print 'Processing Business Data...'
+business_file = open(sys.argv[2])
+business_index = {}
+for line in business_file.readlines():
+	data = json.loads(line.replace("\n",""))
+	business_index[data['business_id']] = data
+
+print 'Processing Stopwords...'
+stopfile = open(sys.argv[3])
+stopwords = [line.strip() for line in stopfile]
 
 
 def main():
-	print 'Processing Inverted Index...'
-	# first read in the inverted index file
-	inverted_index_file = open(sys.argv[1])
-	inverted_index = json.loads(inverted_index_file.readline())
-
-	print 'Processing Business Data...'
-	business_index = {}
-	business_file = open(sys.argv[2])
-	for line in business_file.readlines():
-		data = json.loads(line.replace("\n",""))
-		business_index[data['business_id']] = data
-
-	print 'Processing Stopwords...'
-	stopfile = open(sys.argv[3])
-	stopwords = [line.strip() for line in stopfile]
-
+	# ask for user input and process queries
 	print 'Enter search terms:'
 	line = sys.stdin.readline()
 	while line:
 		businesses = []
+
+		# phrase queries
 		if line[0] == '"' and line[len(line)-1] == '"':
-			#phrase query
 			line.replace('"', '')
 			words = line.strip().split()
 			#TODO - finish
@@ -37,24 +40,30 @@ def main():
 			businesses_temp = {}
 			
 			for w in words:
-				if w not in stopwords:
+				if w not in stopwords and w in inverted_index:
 					for b in inverted_index[w]:
 						if b not in businesses_temp:
 							businesses_temp[b] = 0
 						businesses_temp[b] += 1
-				else:
+				elif w not in stopwords:
 					ignored += 1
 			
 			# find the businesses whose reviews contained all the words
 			for k, v in businesses_temp.iteritems():	
 				if v == (len(words) - ignored):
 					businesses.append(k)
-		print 'matches',businesses
+	
+		# rank businesses and print results
+		if len(businesses) == 0:
+			print 'Sorry, no results found'
+		else:
+			rank(businesses, words)
+		print 'Enter search terms:'
 		line = sys.stdin.readline()		
 
 
 def rank(businesses, words):
-	tfidf = {x: 0 for x in businesses}
+	score = {x: 0 for x in businesses}
 	for w in words:
 		for b in businesses:
 			reviews = inverted_index[w][b]
@@ -69,11 +78,23 @@ def rank(businesses, words):
 				tf += len(v)
 
 			idf = math.log(total_reviews / relevant_reviews)
-			tfidf[b] += tf * idf
-			#TODO - add other heuristics 
+			score[b] += tf * idf
+	# apply heuristic of score=tfidf*log(review_count)*stars
+	for b in businesses:
+		score[b] = score[b] * math.log(business_index[b]["review_count"])*business_index[b]["stars"]
 	
-	#TODO - sort tfidf dict by values and then figure out what we actually want to return
-	return None #scores
+	# sort tfidf dict by values and then figure out what we actually want to return
+	sorted_businesses = sorted(score.iteritems(), key=operator.itemgetter(1), reverse=True)[:10]
+	print 'Results:'
+
+	for i,(b,score) in enumerate(sorted_businesses):
+		row = str(i+1)+': '+business_index[b]['name']+'\n'
+		row += '\tBusiness ID: ' + b + '\n'
+		row += '\tFull Address: ' + business_index[b]['full_address'].replace('\n','\n\t\t') + '\n'
+		row += '\tStars: ' + str(business_index[b]['stars']) + '\n'
+		row += '\tReview Count: ' + str(business_index[b]['review_count']) + '\n'
+
+		print row
 
 
 if __name__ == '__main__':
