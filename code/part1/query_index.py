@@ -1,23 +1,28 @@
 import sys
 import math
-
+import json
 
 
 def main():
+	print 'Processing Inverted Index...'
 	# first read in the inverted index file
 	inverted_index_file = open(sys.argv[1])
 	inverted_index = json.loads(inverted_index_file.readline())
 
+	print 'Processing Business Data...'
 	business_index = {}
 	business_file = open(sys.argv[2])
 	for line in business_file.readlines():
 		data = json.loads(line.replace("\n",""))
 		business_index[data['business_id']] = data
 
+	print 'Processing Stopwords...'
 	stopfile = open(sys.argv[3])
 	stopwords = [line.strip() for line in stopfile]
 
-	for line in sys.stdin:
+	print 'Enter search terms:'
+	line = sys.stdin.readline()
+	while line:
 		businesses = []
 		if line[0] == '"' and line[len(line)-1] == '"':
 			#phrase query
@@ -33,15 +38,17 @@ def main():
 			for w in words:
 				if w not in stopwords:
 					for b in inverted_index[w]:
-						businesses_temp += 1
+						businesses_temp[b] += 1
 				else:
 					ignored += 1
+			
 			# find the businesses whose reviews contained all the words
-			for k, v in enumerate(businesses_temp):
+			for k, v in businesses_temp.iteritems():	
 				if v == (len(words) - ignored):
 					businesses.append(k)
-			
-		return rank(businesses, words)	
+		print 'matches',businesses
+		line = sys.stdin.readline()	
+		#return rank(businesses, words)	
 
 
 def rank(businesses, words):
@@ -64,7 +71,7 @@ def rank(businesses, words):
 			#TODO - add other heuristics 
 	
 	#TODO - sort tfidf dict by values and then figure out what we actually want to return
-	return scores
+	return None #scores
 
 
 if __name__ == '__main__':
