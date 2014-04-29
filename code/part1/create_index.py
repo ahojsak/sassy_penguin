@@ -41,8 +41,7 @@ def main():
 					word = porter_stemmer.PorterStemmer().stem(word, 0,len(word)-1)
 					stemmed_dict[old_word] = word
 				else:
-					word = stemmed_dict[word]
-				word = word.encode('utf-8')
+					word = stemmed_dict[word]	
 				if word not in index:
 					index[word] = {business:{n: [i]}}
 				elif business not in index[word]:
@@ -50,7 +49,7 @@ def main():
 				elif n not in index[word][business]:
 					index[word][business][n] = [i]
 				else:
-					index[word][business][n].append([i])
+					index[word][business][n].append(i)
 	print json.dumps(index)
 
 if __name__ == '__main__':
