@@ -50,6 +50,7 @@ def main():
 				elif n not in index[word][business]:
 					index[word][business][n] = [i]
 				else:
+					# TODO - change to .append(i) ??
 					index[word][business][n].append([i])
 	print json.dumps(index)
 
