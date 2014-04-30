@@ -30,17 +30,23 @@ def main():
 		# phrase queries
 		if line[0] == "\"" and line[len(line)-2] == "\"":
 			line = line.replace("\"", "")
-			words = line.strip().split()
-			first = words[0]
+			oldwords = line.strip().split()
+			first = oldwords[0]
+			words = []
 			ignored = 0
-			for w in words:
+			for w in oldwords:
 				if w in stopwords:
 					ignored += 1
+				else:
+					stemmed = porter_stemmer.PorterStemmer().stem(w, 0,len(w)-1)
+					words.append(stemmed)
 			i = 0
 			while first in stopwords:
 				i += 1
 				first = words[i]
+			print first
 			if first in inverted_index:
+				print "in inverted index"
 				for b in inverted_index[first]:
 					for r in inverted_index[first][b]:
 						for p in inverted_index[first][b][r]:
@@ -48,10 +54,8 @@ def main():
 							position = p
 							print position
 							for x in range(i + 1, len(words)):
-								print "here"
 								if words[x] not in stopwords and words[x] in inverted_index:
 									if b in inverted_index[words[x]] and r in inverted_index[words[x]][b]:
-										print "position + 1", position + 1
 										if (position + 1) in inverted_index[words[x]][b][r]:
 											count += 1
 											position += 1
@@ -66,7 +70,9 @@ def main():
 			businesses_temp = {}
 			
 			for w in words:
+				print "word", w
 				if w not in stopwords and w in inverted_index:
+					print "in index"
 					for b in inverted_index[w]:
 						if b not in businesses_temp:
 							businesses_temp[b] = 0
