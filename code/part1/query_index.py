@@ -2,6 +2,7 @@ import sys
 import math
 import json
 import operator
+import porter_stemmer
 
 # Read in inverted index file, business data file, and stopword file
 print 'Processing Inverted Index...'
@@ -31,7 +32,7 @@ def main():
 		if line[0] == "\"" and line[len(line)-2] == "\"":
 			line = line.replace("\"", "")
 			oldwords = line.strip().split()
-			first = oldwords[0]
+			
 			words = []
 			ignored = 0
 			for w in oldwords:
@@ -41,6 +42,8 @@ def main():
 					stemmed = porter_stemmer.PorterStemmer().stem(w, 0,len(w)-1)
 					words.append(stemmed)
 			i = 0
+			first = words[0]
+			
 			while first in stopwords:
 				i += 1
 				first = words[i]
