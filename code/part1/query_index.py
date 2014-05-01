@@ -3,6 +3,7 @@ import math
 import json
 import operator
 import porter_stemmer
+import re,string
 
 # Read in inverted index file, business data file, and stopword file
 print 'Processing Inverted Index...'
@@ -26,68 +27,29 @@ def main():
 	print 'Enter search terms:'
 	line = sys.stdin.readline()
 	while line:
-		businesses = []
-
-		# phrase queries
+		phrase = False
 		if line[0] == "\"" and line[len(line)-2] == "\"":
+			phrase = True
 			line = line.replace("\"", "")
-			oldwords = line.strip().split()
-			
-			words = []
-			ignored = 0
-			for w in oldwords:
-				if w in stopwords:
-					ignored += 1
-				else:
-					stemmed = porter_stemmer.PorterStemmer().stem(w, 0,len(w)-1)
-					words.append(stemmed)
-			i = 0
-			first = words[0]
-			
-			while first in stopwords:
-				i += 1
-				first = words[i]
-			print first
-			if first in inverted_index:
-				print "in inverted index"
-				for b in inverted_index[first]:
-					for r in inverted_index[first][b]:
-						for p in inverted_index[first][b][r]:
-							count = 1
-							position = p
-							print position
-							for x in range(i + 1, len(words)):
-								if words[x] not in stopwords and words[x] in inverted_index:
-									if b in inverted_index[words[x]] and r in inverted_index[words[x]][b]:
-										if (position + 1) in inverted_index[words[x]][b][r]:
-											count += 1
-											position += 1
-							if count == (len(words) - ignored) and b not in businesses:
-								businesses.append(b)
-
 		
-		# one word / free text queries
-		else:
-			words = line.strip().split()
-			ignored = 0
-			businesses_temp = {}
-			
-			for w in words:
-				print "word", w
-				if w not in stopwords and w in inverted_index:
-					print "in index"
-					for b in inverted_index[w]:
-						if b not in businesses_temp:
-							businesses_temp[b] = 0
-						businesses_temp[b] += 1
-				elif w in stopwords:
+		regex = re.compile('[%s]' % re.escape(string.punctuation))
+		oldwords = regex.sub(' ', line.strip().lower()).split()
+		words = []
+		ignored = 0
+		for w in oldwords:
+			if w in stopwords:
+				print w
+				if phrase: #add placeholder
+					words.append("")
 					ignored += 1
-			
-			# find the businesses whose reviews contained all the words
-			for k, v in businesses_temp.iteritems():	
-				if v == (len(words) - ignored):
-					businesses.append(k)
-	
+			else:
+				stemmed = porter_stemmer.PorterStemmer().stem(w, 0,len(w)-1)
+				words.append(stemmed)
+		
+		if phrase:
+			businesses = processPhraseQuery(words, ignored)
+		else:
+			businesses = processQuery(words)
 		# rank businesses and print results
 		if len(businesses) == 0:
 			print 'Sorry, no results found'
@@ -96,6 +58,49 @@ def main():
 			#rank(businesses, words)
 		print 'Enter search terms:'
 		line = sys.stdin.readline()		
+
+def processQuery(words):
+	print words
+	businesses_temp = {}
+	businesses = []
+	for w in words:
+		if w in inverted_index:
+			for b in inverted_index[w]:
+				if b not in businesses_temp:
+					businesses_temp[b] = 0
+				businesses_temp[b] += 1
+	
+	# find the businesses whose reviews contained all the words
+	for k, v in businesses_temp.iteritems():	
+		if v == (len(words)):
+			businesses.append(k)
+	return businesses
+
+def processPhraseQuery(words, ignored):
+	businesses = []
+	i = 0
+	first = words[0]
+	while first == "":
+		i += 1
+		first = words[i]
+
+	if first in inverted_index:
+		for b in inverted_index[first]:
+			for r in inverted_index[first][b]:
+				for p in inverted_index[first][b][r]:
+					count = 1
+					position = p
+					for x in range(i+1, len(words)):
+						if words[x] == "":
+							position += 1
+						elif words[x] in inverted_index:
+							if b in inverted_index[words[x]] and r in inverted_index[words[x]][b]:
+								if (position + 1) in inverted_index[words[x]][b][r]:
+									count += 1
+									position += 1
+					if count == (len(words) - ignored) and b not in businesses:
+						businesses.append(b)
+	return businesses
 
 
 # def rank(businesses, words):
