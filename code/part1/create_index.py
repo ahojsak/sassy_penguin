@@ -52,19 +52,21 @@ def main():
 				else:
 					word = stemmed_dict[word]	
 				if word not in index:
-					index[word] = {business:{n: [i]}}
+					index[word] = {business:{int(n): [i]}}
 				elif business not in index[word]:
-					index[word][business] = {n:[i]}
+					index[word][business] = {int(n):[i]}
 				elif n not in index[word][business]:
-					index[word][business][n] = [i]
+					index[word][business][int(n)] = [i]
 				else:
-					index[word][business][n].append(i)
+					index[word][business][(n)].append(i)
 			
 			i+=1
 		n+=1
 		line = f.readline()
 	f.close()
-	print json.dumps(index, separators=(',',':'))
+	for key in index:
+		print json.dumps({key:index[key]}, separators=(',',':'))
+	#print json.dumps(index, separators=(',',':'))
 
 if __name__ == '__main__':
 	main()

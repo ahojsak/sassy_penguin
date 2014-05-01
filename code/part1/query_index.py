@@ -123,8 +123,8 @@ def rank(businesses, words):
 				idf = math.log(total_reviews / relevant_reviews)
 				score[b] += tf * idf
 	# apply heuristic of score=tfidf*log(review_count)*stars
-	for b in businesses:
-		score[b] = score[b] * math.log(business_index[b]["review_count"])*business_index[b]["stars"]
+	for b in businesses:	
+		score[b] = score[b] * math.log(business_index[b]["review_count"])*(business_index[b]["stars"]**2)
 	
 	# sort tfidf dict by values and then figure out what we actually want to return
 	sorted_businesses = sorted(score.iteritems(), key=operator.itemgetter(1), reverse=True)[:10]
