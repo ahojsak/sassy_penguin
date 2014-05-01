@@ -8,7 +8,11 @@ import re,string
 # Read in inverted index file, business data file, and stopword file
 print 'Processing Inverted Index...'
 inverted_index_file = open(sys.argv[1])
-inverted_index = json.loads(inverted_index_file.readline())
+inverted_index = {}
+for line in inverted_index_file:
+	row = json.loads(line)
+	for key in row:
+		inverted_index[key] = row[key]
 
 print 'Processing Business Data...'
 business_file = open(sys.argv[2])
