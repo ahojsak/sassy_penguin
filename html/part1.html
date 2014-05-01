@@ -52,8 +52,14 @@
 			</p>
 			<h2>Queries</h2>
 			<p>
-
-			</p>
+                When a user submits a query, we first determine whether the query begins and ends with quotation marks. If so, it is treated as a phrase query; otherwise it is viewed as a one word or free text query. Before beginning the term search, common words like 'the' in the stopwords file are filtered out from the list of search terms. Each word is lowercased, stemming is applied, and punctuation is removed.
+            </p>
+            <p>
+                One word queries and free text queries are handled in the same way. We look at each individual word's entry in the inverted index.If a single business's reviews contain every search term (without regard to the location in the reviews), that business is added to the results set.
+            </p>
+            <p>
+                For phrase queries, we begin by looking at the inverted index entry of the first word in the query that is not a stop word. For each review and position in which the word is found we then go through each subsequent search term, checking that its position in the same review is one greater than that of the previous word. If the exact query phrase is found in a business's set of reviews, that business is then added to the results set. If a stop word is positioned between two non-stop words, then we perform the search by skipping over the stop word's position.
+            </p>
 			<h2>Ranking</h2>
 			<p>
 

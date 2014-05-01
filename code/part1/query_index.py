@@ -136,6 +136,7 @@ def rank(businesses, words):
 		row += '\tFull Address: ' + business_index[b]['full_address'].replace('\n','\n\t\t') + '\n'
 		row += '\tStars: ' + str(business_index[b]['stars']) + '\n'
 		row += '\tReview Count: ' + str(business_index[b]['review_count']) + '\n'
+		row += '\tCategories: ' + str(business_index[b]['categories']) + '\n'
 
 		print row.encode('utf-8')
 
