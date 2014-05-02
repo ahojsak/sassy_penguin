@@ -45,7 +45,7 @@
 			The index needed to be indexed first by the word, because a search script needs constant time lookup for all reviews containing that word. We chose to index by business and then review because the same words will probably occur in reviews for the same business. By making business a dictionary, we avoid having to repeat the business name in the index every time multiple reviews for the same business contain the same word. We index by review next because the query script will need to easily find how many times a word appears in a review and where it appears.
 			</p>
 			<p>
-			The inverted index file we created is 595 MB. The review dataset that was used to build the inverted index is 303 MB, so our file is 195% of the original file. When our query program reads in the file, it stores the index as a json and the format of the inverted index file is optimal for retrieving the information that the query program needs.
+			The inverted index file we created is 445 MB. The review dataset that was used to build the inverted index is 303 MB, so our file is 146% of the original file. When our query program reads in the file, it stores the index as a json and the format of the inverted index file is optimal for retrieving the information that the query program needs.
 			</p>
 			<p>
 			While building up the inverted index file, the review texts need to be processed. All words are converted to lowercase, and all punctuation is removed before the string is split on whitespaces.. We used a list of stopwords which we filtered out because they occur frequently yet say little. Each word is then stemmed so that all tenses of a word will be treated as equivalent. 

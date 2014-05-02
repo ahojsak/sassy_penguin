@@ -62,6 +62,7 @@ def main():
 		print 'Enter search terms:'
 		line = sys.stdin.readline()		
 
+# find businesses that contain all of the words
 def processQuery(words):
 	businesses_temp = {}
 	businesses = []
@@ -78,6 +79,7 @@ def processQuery(words):
 			businesses.append(k)
 	return businesses
 
+# helper function to process a phrase query
 def processPhraseQuery(words, ignored):
 	businesses = []
 	i = 0
@@ -109,21 +111,23 @@ def processPhraseQuery(words, ignored):
 
 def rank(businesses, words):
 	score = {x: 0 for x in businesses}
-	# TODO - deal with words in stopwords
+	
 	for w in words:
 		if w != "":
 			for b in businesses:
 				reviews = inverted_index[w][b]
 				tf = 0
 				
-				data = business_index[b]
-				total_reviews = data["review_count"]
-
 				#num of reviews in which word appears		
 				relevant_reviews = len(reviews)
+
+				data = business_index[b]
+				total_reviews = max(data["review_count"],relevant_reviews)
+
+				
 				for k, v in enumerate(reviews):
 					tf += len(v)
-
+				
 				idf = math.log(total_reviews / relevant_reviews)
 				score[b] += tf * idf
 	# apply heuristic of score=tfidf*log(review_count)*stars

@@ -66,7 +66,7 @@ def main():
 	f.close()
 	for key in index:
 		print json.dumps({key:index[key]}, separators=(',',':'))
-	#print json.dumps(index, separators=(',',':'))
+	
 
 if __name__ == '__main__':
 	main()
