@@ -34,24 +34,24 @@ def main():
 	# process the review file
 	f = open(opts.training, 'rb')
 	
-	tweets = []
-	sent = []
+	text = []
+	score = []
 	
 	line = f.readline()
 	while line:
 		data = json.loads(line)
 		if data['votes']['funny'] >= funny_threshold:
-			sent.append(1)
+			score.append(1)
 		else:
-			sent.append(0)
-		tweets.append(data['text'])
+			score.append(0)
+		text.append(data['text'])
 		line = f.readline()
 	f.close()
 
     # Get training features using vectorizer
-	training_features = vectorizer.fit_transform(tweets)
+	training_features = vectorizer.fit_transform(text)
 	# Transform training labels to numpy array (numpy.array)
-	training_labels = numpy.array(sent)
+	training_labels = numpy.array(score)
 	############################################################
 	
 	##### TRAIN THE MODEL ######################################
@@ -75,25 +75,24 @@ def main():
 		# Test the classifier on the given test set
 		# Extract features from the test set and transform it using vectorizer
 		f = open(opts.test, 'rb')
-		tweets = []
-		sent = []
-		
+		text = []
+		score = []
 			
 		line = f.readline()
 		while line:
 			data = json.loads(line)
 			
 			if data['votes']['funny'] >= funny_threshold:
-				sent.append(1)
+				score.append(1)
 			else:
-				sent.append(0)
+				score.append(0)
 			
-			tweets.append(data['text'])
+			text.append(data['text'])
 			line = f.readline()
 		f.close()
 
-		test_features = vectorizer.transform(tweets)
-		test_labels = numpy.array(sent)
+		test_features = vectorizer.transform(text)
+		test_labels = numpy.array(score)
 		# Print test mean accuracy
 		test_score = classifier.score(test_features, test_labels)
 		print "The mean accuracy on test data is", test_score
