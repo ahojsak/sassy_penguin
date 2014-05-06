@@ -1,10 +1,9 @@
-from porter_stemmer import PorterStemmer
 import re
 import string
 
 class Tokenizer(object):
 	def __init__(self):
-		self.stemmer = PorterStemmer()
+		pass
 
 	def process_tweet(self, tweet):
         #TODO: pre-process tweet

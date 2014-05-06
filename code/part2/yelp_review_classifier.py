@@ -5,12 +5,13 @@ import argparse
 from collections import defaultdict
 import Queue
 import util
+import json
 
 import numpy
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn import cross_validation
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import MultinomialNB
 from tokenizer import Tokenizer
 import matplotlib.pyplot as plt
 
@@ -22,6 +23,8 @@ def main():
 	opts = parser.parse_args()
 	############################################################
 
+	funny_threshold = 1
+	
 	##### BUILD TRAINING SET ###################################
 	# Initialize CountVectorizer
 	# You will need to implement functions in tokenizer.py
@@ -37,8 +40,11 @@ def main():
 	line = f.readline()
 	while line:
 		data = json.loads(line)
-		sent.append(data['votes']['funny'])
-		tweets.append(data['text']
+		if data['votes']['funny'] >= funny_threshold:
+			sent.append(1)
+		else:
+			sent.append(0)
+		tweets.append(data['text'])
 		line = f.readline()
 	f.close()
 
@@ -51,8 +57,9 @@ def main():
 	##### TRAIN THE MODEL ######################################
 	# Initialize the corresponding type of the classifier and train it (using 'fit')
 
-	classifier = BernoulliNB(binarize=None, alpha=0.75)
+	classifier = MultinomialNB(fit_prior=True)
 	classifier.fit(training_features, training_labels)
+	print classifier.class_count_
 	############################################################
 
 
@@ -75,8 +82,13 @@ def main():
 		line = f.readline()
 		while line:
 			data = json.loads(line)
-			sent.append(data['votes']['funny'])
-			tweets.append(data['text']
+			
+			if data['votes']['funny'] >= funny_threshold:
+				sent.append(1)
+			else:
+				sent.append(0)
+			
+			tweets.append(data['text'])
 			line = f.readline()
 		f.close()
 
@@ -94,12 +106,7 @@ def main():
 		print "Here is the confusion matrix"
 		print confusion_matrix(test_labels, predicted_labels)
 		
-		# Use predict_proba
-		test_predicted_proba = classifier.predict_proba(test_features)
 
-		# Plot ROC curve
-		util.plot_roc_curve(test_labels, test_predicted_proba)
-	
 	############################################################
  		
 if __name__ == '__main__':

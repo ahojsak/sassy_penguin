@@ -13,8 +13,8 @@ def main():
 	opts = parser.parse_args()
 	############################################################
 
-	training_prob = 0.1
-	test_prob = 0.05
+	training_prob = 0.7
+	test_prob = 0.3
 	
 	# process the orginal data file
 	f = open(opts.data, 'r')
