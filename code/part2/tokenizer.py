@@ -15,9 +15,9 @@ class Tokenizer(object):
 		regex = re.compile('[%s]' % re.escape(string.punctuation))
 		
 		for word in regex.sub(' ', review.lower().encode('utf-8')).split():
-			#	if word not in self.stopwords:
 			word = porter_stemmer.PorterStemmer().stem(word, 0,len(word)-1)
 			toreturn.append(word)
+			
 		return toreturn
 
 	def __call__(self, doc):

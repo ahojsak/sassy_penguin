@@ -10,10 +10,7 @@ import json
 import numpy
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
-from sklearn import cross_validation
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import LinearSVC
 from tokenizer import Tokenizer
 import matplotlib.pyplot as plt
 
@@ -80,7 +77,7 @@ def main():
 		
 		##### TRAIN THE MODEL ######################################
 		# Initialize the corresponding type of the classifier and train it (using 'fit')
-		classifier = MultinomialNB()
+		classifier = MultinomialNB(alpha=3)	
 		classifier.fit(training_features, training_labels)
 		
 		############################################################
