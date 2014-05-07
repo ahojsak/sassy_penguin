@@ -7,8 +7,8 @@ class Tokenizer(object):
 	def __init__(self):
 		pass
 
-	def process_tweet(self, review):
-        #TODO: pre-process tweet
+	def process_review(self, review):
+        # pre-process review
         # this is a helper function for __call__
 		
 		toreturn = []
@@ -22,6 +22,6 @@ class Tokenizer(object):
 
 	def __call__(self, doc):
     	# this function will tokenize the given document and return a list of extracted features (tokens)
-		processed_doc = self.process_tweet(doc)
-        #TODO: return a list of features extracted from processed_doc 
+		processed_doc = self.process_review(doc)
+        # return a list of features extracted from processed_doc 
 		return processed_doc
