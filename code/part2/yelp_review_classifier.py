@@ -20,15 +20,20 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-training', required=True, help='Path to training data')
 	parser.add_argument('-test', help='Path to test data')	
+	parser.add_argument('-stop', required=True, help='path to stop word file')
 	opts = parser.parse_args()
 	############################################################
 
-	funny_threshold = 1
+	threshold = 1
 	
 	##### BUILD TRAINING SET ###################################
 	# Initialize CountVectorizer
 	# You will need to implement functions in tokenizer.py
-	tokenizer = Tokenizer()
+	
+	stopfile = open(opts.stop, 'rb')
+	stopwords = [line.strip() for line in stopfile]
+
+	tokenizer = Tokenizer(stopwords)
 	vectorizer = CountVectorizer(binary=True, lowercase=True, decode_error='replace', tokenizer=tokenizer)
 	
 	# process the review file
@@ -39,11 +44,18 @@ def main():
 	
 	line = f.readline()
 	while line:
+		total = 0
 		data = json.loads(line)
-		if data['votes']['funny'] >= funny_threshold:
-			score.append(1)
-		else:
-			score.append(0)
+		if data['votes']['funny'] >= 1:
+			total += 4
+		if data['votes']['useful'] >= 1:
+			total += 2
+		if data['votes']['cool'] >= 1:
+			total += 1
+		if total in [1, 4, 5, 6]:
+			total = 0
+		score.append(total)
+
 		text.append(data['text'])
 		line = f.readline()
 	f.close()
@@ -57,7 +69,7 @@ def main():
 	##### TRAIN THE MODEL ######################################
 	# Initialize the corresponding type of the classifier and train it (using 'fit')
 
-	classifier = MultinomialNB(fit_prior=True)
+	classifier = MultinomialNB()
 	classifier.fit(training_features, training_labels)
 	print classifier.class_count_
 	############################################################
@@ -80,12 +92,18 @@ def main():
 			
 		line = f.readline()
 		while line:
+			total = 0
 			data = json.loads(line)
 			
-			if data['votes']['funny'] >= funny_threshold:
-				score.append(1)
-			else:
-				score.append(0)
+			if data['votes']['funny'] >= 1:
+				total += 4
+			if data['votes']['useful'] >= 1:
+				total += 2
+			if data['votes']['cool'] >= 1:
+				total += 1
+			if total in [1, 4, 5, 6]:
+				total = 0
+			score.append(total)
 			
 			text.append(data['text'])
 			line = f.readline()
