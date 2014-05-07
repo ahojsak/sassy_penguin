@@ -12,6 +12,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn import cross_validation
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
 from tokenizer import Tokenizer
 import matplotlib.pyplot as plt
 
@@ -22,8 +24,6 @@ def main():
 	parser.add_argument('-test', help='Path to test data')	
 	opts = parser.parse_args()
 	############################################################
-
-	funny_threshold = 1
 	
 	##### BUILD TRAINING SET ###################################
 	# Initialize CountVectorizer
@@ -35,76 +35,91 @@ def main():
 	f = open(opts.training, 'rb')
 	
 	text = []
-	score = []
+	score_funny = []
+	score_useful = []
+	score_cool = []
 	
 	line = f.readline()
 	while line:
 		data = json.loads(line)
-		if data['votes']['funny'] >= funny_threshold:
-			score.append(1)
+		if data['votes']['funny'] == 0:
+			score_funny.append(0)
 		else:
-			score.append(0)
+			score_funny.append(1)
+		if data['votes']['cool'] == 0:
+			score_cool.append(0)
+		else:
+			score_cool.append(1)
+		if data['votes']['useful'] == 0:
+			score_useful.append(0)
+		else:
+			score_useful.append(1)
+
 		text.append(data['text'])
 		line = f.readline()
 	f.close()
 
-    # Get training features using vectorizer
+	# Get training features using vectorizer
 	training_features = vectorizer.fit_transform(text)
-	# Transform training labels to numpy array (numpy.array)
-	training_labels = numpy.array(score)
-	############################################################
-	
-	##### TRAIN THE MODEL ######################################
-	# Initialize the corresponding type of the classifier and train it (using 'fit')
-
-	classifier = MultinomialNB(fit_prior=True)
-	classifier.fit(training_features, training_labels)
-	print classifier.class_count_
-	############################################################
 
 
-	###### VALIDATE THE MODEL ##################################
-	# Print training mean accuracy using 'score'
-	train_accuracy = classifier.score(training_features, training_labels)
-	print "The training accuracy is ", train_accuracy
-	############################################################
+	for score, label in [(score_funny, 'funny'), (score_useful, 'useful'), (score_cool, 'cool')]:
+		print label
+		print '-----------------------------------'
 
-
-	##### TEST THE MODEL #######################################
-	if not opts.test is None:
-		# Test the classifier on the given test set
-		# Extract features from the test set and transform it using vectorizer
-		f = open(opts.test, 'rb')
-		text = []
-		score = []
-			
-		line = f.readline()
-		while line:
-			data = json.loads(line)
-			
-			if data['votes']['funny'] >= funny_threshold:
-				score.append(1)
-			else:
-				score.append(0)
-			
-			text.append(data['text'])
-			line = f.readline()
-		f.close()
-
-		test_features = vectorizer.transform(text)
-		test_labels = numpy.array(score)
-		# Print test mean accuracy
-		test_score = classifier.score(test_features, test_labels)
-		print "The mean accuracy on test data is", test_score
-		# Predict labels for the test set
-		predicted_labels = classifier.predict(test_features)
-		# Print the classification report
-		print "Here is the classification report"
-		print classification_report(test_labels, predicted_labels)
-		# Print the confusion matrix
-		print "Here is the confusion matrix"
-		print confusion_matrix(test_labels, predicted_labels)
+		# Transform training labels to numpy array (numpy.array)
+		training_labels = numpy.array(score)
+		############################################################
 		
+		##### TRAIN THE MODEL ######################################
+		# Initialize the corresponding type of the classifier and train it (using 'fit')
+		classifier = MultinomialNB()
+		classifier.fit(training_features, training_labels)
+		
+		############################################################
+
+
+		###### VALIDATE THE MODEL ##################################
+		# Print training mean accuracy using 'score'
+		train_accuracy = classifier.score(training_features, training_labels)
+		print "The training accuracy is ", train_accuracy
+		############################################################
+
+
+		##### TEST THE MODEL #######################################
+		if not opts.test is None:
+			# Test the classifier on the given test set
+			# Extract features from the test set and transform it using vectorizer
+			f = open(opts.test, 'rb')
+			text = []
+			score_t = []
+		
+			line = f.readline()
+			while line:
+				data = json.loads(line)
+				if data['votes'][label] == 0:
+					score_t.append(0)
+				else:
+					score_t.append(1)
+				text.append(data['text'])
+				line = f.readline()
+			f.close()
+
+			test_features = vectorizer.transform(text)
+			test_labels = numpy.array(score_t)
+
+			# Print test mean accuracy
+			test_score = classifier.score(test_features, test_labels)
+			print "The mean accuracy on test data is", test_score
+			# Predict labels for the test set
+			predicted_labels = classifier.predict(test_features)
+			# Print the classification report
+			print "Here is the classification report"
+			print classification_report(test_labels, predicted_labels)
+			# Print the confusion matrix
+			print "Here is the confusion matrix"
+			print confusion_matrix(test_labels, predicted_labels)
+			
 
 	############################################################
  		
