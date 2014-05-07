@@ -4,8 +4,8 @@ import porter_stemmer
 
 class Tokenizer(object):
 
-	def __init__(self, sw):
-		self.stopwords = sw
+	def __init__(self):
+		pass
 
 	def process_tweet(self, review):
         #TODO: pre-process tweet

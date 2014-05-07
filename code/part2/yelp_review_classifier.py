@@ -19,18 +19,15 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-training', required=True, help='Path to training data')
 	parser.add_argument('-test', help='Path to test data')	
-	parser.add_argument('-stop', required=True, help='path to stop word file')
+	parser.add_argument('-top', type=int, help='Number of top features to show')
 	opts = parser.parse_args()
 	############################################################
 
 	##### BUILD TRAINING SET ###################################
 	# Initialize CountVectorizer
 	# You will need to implement functions in tokenizer.py
-	
-	stopfile = open(opts.stop, 'rb')
-	stopwords = [line.strip() for line in stopfile]
 
-	tokenizer = Tokenizer(stopwords)
+	tokenizer = Tokenizer()
 	vectorizer = CountVectorizer(binary=True, lowercase=True, decode_error='replace', tokenizer=tokenizer)
 	
 	# process the review file
@@ -77,7 +74,7 @@ def main():
 		
 		##### TRAIN THE MODEL ######################################
 		# Initialize the corresponding type of the classifier and train it (using 'fit')
-		classifier = MultinomialNB(alpha=3)	
+		classifier = MultinomialNB(alpha=3)
 		classifier.fit(training_features, training_labels)
 		
 		############################################################
@@ -88,6 +85,10 @@ def main():
 		# Print training mean accuracy using 'score'
 		train_accuracy = classifier.score(training_features, training_labels)
 		print "The training accuracy is ", train_accuracy
+
+		if opts.top is not None:
+			# print top n most informative features for positive and negative classes
+			print util.print_most_informative_features('nb', vectorizer, classifier, opts.top)
 		############################################################
 
 		##### TEST THE MODEL #######################################
