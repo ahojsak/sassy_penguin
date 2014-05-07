@@ -2,18 +2,20 @@ import re
 import string
 
 class Tokenizer(object):
-	def __init__(self):
-		pass
 
-	def process_tweet(self, tweet):
+	def __init__(self, sw):
+		self.stopwords = sw
+
+	def process_tweet(self, review):
         #TODO: pre-process tweet
         # this is a helper function for __call__
 		
 		toreturn = []
+		regex = re.compile('[%s]' % re.escape(string.punctuation))
 		
-		for word in tweet.lower().encode('utf-8').split():
-			word = re.sub(r'([a-z])\1\1+',r'\1\1',word)
-			toreturn.append(word)
+		for word in regex.sub(' ', review.lower().encode('utf-8')).split():
+			if word not in self.stopwords:
+				toreturn.append(word)
 
 		return toreturn
 

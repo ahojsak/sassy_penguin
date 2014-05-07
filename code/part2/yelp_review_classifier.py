@@ -22,13 +22,18 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-training', required=True, help='Path to training data')
 	parser.add_argument('-test', help='Path to test data')	
+	parser.add_argument('-stop', required=True, help='path to stop word file')
 	opts = parser.parse_args()
 	############################################################
-	
+
 	##### BUILD TRAINING SET ###################################
 	# Initialize CountVectorizer
 	# You will need to implement functions in tokenizer.py
-	tokenizer = Tokenizer()
+	
+	stopfile = open(opts.stop, 'rb')
+	stopwords = [line.strip() for line in stopfile]
+
+	tokenizer = Tokenizer(stopwords)
 	vectorizer = CountVectorizer(binary=True, lowercase=True, decode_error='replace', tokenizer=tokenizer)
 	
 	# process the review file
@@ -41,7 +46,9 @@ def main():
 	
 	line = f.readline()
 	while line:
+		total = 0
 		data = json.loads(line)
+
 		if data['votes']['funny'] == 0:
 			score_funny.append(0)
 		else:
@@ -61,8 +68,8 @@ def main():
 
 	# Get training features using vectorizer
 	training_features = vectorizer.fit_transform(text)
-
-
+	
+	############################################################
 	for score, label in [(score_funny, 'funny'), (score_useful, 'useful'), (score_cool, 'cool')]:
 		print label
 		print '-----------------------------------'
@@ -79,12 +86,12 @@ def main():
 		############################################################
 
 
+
 		###### VALIDATE THE MODEL ##################################
 		# Print training mean accuracy using 'score'
 		train_accuracy = classifier.score(training_features, training_labels)
 		print "The training accuracy is ", train_accuracy
 		############################################################
-
 
 		##### TEST THE MODEL #######################################
 		if not opts.test is None:
