@@ -55,8 +55,13 @@ def main():
 	f.close()
 
 	print 'Star counts by combination of vote types'
-	for k in data:
-		print k,data[k]
+	print 'None,FUC,U,UC,C,F,FU,FC'
+
+	for n in range(1,6):
+		line = ""
+		for k in ['','funnycooluseful','useful','cooluseful','cool','funny','funnyuseful','funnycool']:
+			line += str(data[k][n]) + ","
+		print line[:-1]
 
 	print ''
 	print 'Vote counts by type'

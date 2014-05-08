@@ -1,61 +1,86 @@
- // First, we define sizes and colours...
-var outerW = 640; // outer width
-var outerH = 480; // outer height
-var padding = { t: 0, r: 0, b: 0, l: 0 };
-var w = outerW - padding.l - padding.r; // inner width
-var h = outerH - padding.t - padding.b; // inner height
-var c = [ "#E41A1C", "#377EB8", "#4DAF4A" ]; // ColorBrewer Set 1
-
-// Second, we define our data...
-var numberGroups = 7; // groups
-var numberSeries = 3;  // series in each group
-d3.csv("data/votecounts.txt", 
+d3.csv("data/chart1.txt", 
 	function(d) {
 		return [d.funny, d.cool, d.useful];
 	}, function(error, data) {
 		data = d3.transpose(data);
+		console.log(data);
+		var n = 7, // number of samples
+			m = 3; // number of series
 
-		// Third, we define our scales...
-		// Groups scale, x axis
+		var margin = {top: 20, right: 30, bottom: 30, left: 60},
+			width = 640 - margin.left - margin.right,
+			height = 400 - margin.top - margin.bottom;
+
+		var y = d3.scale.linear()
+			.domain([0, 270000])
+			.range([height, 0]);
+
 		var x0 = d3.scale.ordinal()
-			.domain(d3.range(numberGroups))
-			.rangeBands([0, w],0.2,0);
+			.domain(d3.range(n))
+			.rangeBands([0, width], .2,0);
 
-		// Series scale, x axis
-		// It might help to think of the series scale as a child of the groups scale
 		var x1 = d3.scale.ordinal()
-			.domain(d3.range(numberSeries))
+			.domain(d3.range(m))
 			.rangeBands([0, x0.rangeBand()]);
 
-		// Values scale, y axis
-		var y = d3.scale.linear()
-			.domain([0, 270000]) // Because Math.random returns numbers between 0 and 1
-			.range([0, h]);
+		var z = d3.scale.category20c();
 
-		// Visualisation selection
-		var vis = d3.select("#chart1")
-			.append("svg:svg")
-			.attr("width", outerW)
-			.attr("height", outerH);
+		var xAxis = d3.svg.axis()
+			.scale(x0)
+			.orient("bottom");
 
-		// Series selection
-		// We place each series into its own SVG group element. In other words,
-		// each SVG group element contains one series (i.e. bars of the same colour).
-		// It might be helpful to think of each SVG group element as containing one bar chart.
-		var series = vis.selectAll("g.series")
+		var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient("left");
+
+		var svg = d3.select("#chart1").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+		  .append("svg:g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		
+		
+		// Make axes
+		svg.append("g")
+			.attr("class", "y axis")
+			.call(yAxis);
+
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis);
+		
+		// Draw bars
+		svg.append("g").selectAll("g")
 			.data(data)
-		.enter().append("svg:g")
-			.attr("class", "series") 
-			.attr("fill", function (d, i) { return c[i]; })
-			.attr("transform", function (d, i) { return "translate(" + x1(i) + ")"; });
-
-		// Groups selection
-		var groups = series.selectAll("rect")
-			.data(Object) // The second dimension in the two-dimensional data array
-		.enter().append("svg:rect")
-			.attr("x", 0)
-			.attr("y", function (d) { return h - y(d); })
+		  .enter().append("g")
+			.style("fill", function(d, i) { return z(i); })
+			.attr("transform", function(d, i) { return "translate(" + x1(i) + ",0)"; })
+		  .selectAll("rect")
+			.data(function(d) { return d; })
+		  .enter().append("rect")
 			.attr("width", x1.rangeBand())
-			.attr("height", y)
-			.attr("transform", function (d, i) { return "translate(" + x0(i) + ")"; });
+			.attr("height", function(d) { return height - y(d); })
+			.attr("x", function(d, i) { return x0(i); })
+			.attr("y", function(d) { return y(d); });
+			
+		// Ad legend
+		var legend = svg.selectAll(".legend")
+			.data(['funny','cool','useful'])
+		.enter().append("g")
+			.attr("class", "legend")
+			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+		legend.append("rect")
+			.attr("x", width - 18)
+			.attr("width", 18)
+			.attr("height", 18)
+			.style("fill", function(d, i) { return z(i); });
+
+		legend.append("text")
+			.attr("x", width - 24)
+			.attr("y", 9)
+			.attr("dy", ".35em")
+			.style("text-anchor", "end")
+			.text(function(d) { return d; });
 });
