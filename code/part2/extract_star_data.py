@@ -15,7 +15,7 @@ def main():
 	f = open(opts.data, 'r')
 
 	data = {}
-
+	vote_counts = {'funny':{}, 'cool':{}, 'useful':{}}
 	line = f.readline()
 	while line:
 		review = json.loads(line)
@@ -24,11 +24,22 @@ def main():
 		votes = ""
 		if review['votes']['funny']>0:
 			votes += 'funny'
+			if review['votes']['funny'] not in vote_counts['funny']:
+				vote_counts['funny'][review['votes']['funny']] = 0
+			vote_counts['funny'][review['votes']['funny']] += 1
+
 		if review['votes']['cool']>0:
 			votes += 'cool'
+			if review['votes']['cool'] not in vote_counts['cool']:
+				vote_counts['cool'][review['votes']['cool']] = 0
+			vote_counts['cool'][review['votes']['cool']] += 1
+
 		if review['votes']['useful']>0:
 			votes += 'useful'
-		
+			if review['votes']['useful'] not in vote_counts['useful']:
+				vote_counts['useful'][review['votes']['useful']] = 0
+			vote_counts['useful'][review['votes']['useful']] += 1
+	
 		if votes not in data:
 			data[votes] = {}
 		if stars not in data[votes]:
@@ -39,8 +50,14 @@ def main():
 
 	f.close()
 
+	print 'Star counts by combination of vote types'
 	for k in data:
 		print k,data[k]
+
+	print ''
+	print 'Vote counts by type'
+	for k in vote_counts:
+		print k, vote_counts[k]
 
 	############################################################
  		
