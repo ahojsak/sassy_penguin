@@ -67,7 +67,6 @@ var circles = svg.selectAll("g").append("path")
 	.append("textPath")
 	.attr("alignment-baseline", "hanging")
 	.attr("fill","white")
-	//.attr("startOffset","50%")
 	.attr("xlink:href",function(d,i){ return "#s"+i;})
 	.text(function(d,i) {return d.key;});
 	
@@ -76,7 +75,7 @@ var legend = svg.selectAll(".legend")
 	.data([1,2,3,4,5])
 .enter().append("g")
 	.attr("class", "legend")
-	.attr("transform", function(d, i) { console.log(i); return "translate(-" + width / 2 +",-" + (height / 2 - i * 20 ) + ")"; });
+	.attr("transform", function(d, i) {return "translate(-" + width / 2 +",-" + (height / 2 - i * 20 ) + ")"; });
 
 legend.append("rect")
 	.attr("x", width - 18)

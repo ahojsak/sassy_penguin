@@ -3,7 +3,6 @@ d3.csv("data/chart2.txt",
 		return [d.None,d.FUC,d.U,d.UC,d.C,d.F,d.FU,d.FC];
 	}, function(error, data) {
 		data = d3.transpose(data);
-		console.log(data);
 		var n = 5, // number of samples
 			m = 8; // number of series
 

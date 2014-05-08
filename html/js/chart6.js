@@ -1,38 +1,42 @@
-d3.csv("data/chart1.txt", 
+d3.csv("data/chart6.txt", 
 	function(d) {
-		return [d.funny, d.cool, d.useful];
+		return [d.Training,d.Testing];
 	}, function(error, data) {
 		data = d3.transpose(data);
-		var n = 7, // number of samples
-			m = 3; // number of series
+		var n = 3, // number of samples
+			m = 2; // number of series
 
 		var margin = {top: 20, right: 30, bottom: 30, left: 60},
 			width = 640 - margin.left - margin.right,
 			height = 400 - margin.top - margin.bottom;
 
 		var y = d3.scale.linear()
-			.domain([0, 270000])
+			.domain([0, 100])
 			.range([height, 0]);
 
 		var x0 = d3.scale.ordinal()
-			.domain(d3.range(n))
-			.rangeBands([0, width], .2,0);
+			.domain([3,2,1])
+			.rangeBands([width, 0], .2,0);
 
 		var x1 = d3.scale.ordinal()
 			.domain(d3.range(m))
 			.rangeBands([0, x0.rangeBand()]);
+			
+		var x2 = d3.scale.ordinal()
+			.domain(["Funny","Useful","Cool"])
+			.rangeBands([width, 0], .2,0);
 
-		var z = d3.scale.category20c();
+		var z = d3.scale.category20();
 
 		var xAxis = d3.svg.axis()
-			.scale(x0)
+			.scale(x2)
 			.orient("bottom");
 
 		var yAxis = d3.svg.axis()
 			.scale(y)
 			.orient("left");
 
-		var svg = d3.select("#chart1").append("svg")
+		var svg = d3.select("#chart6").append("svg")
 			.attr("width", width + margin.left + margin.right)
 			.attr("height", height + margin.top + margin.bottom)
 		  .append("svg:g")
@@ -60,12 +64,12 @@ d3.csv("data/chart1.txt",
 		  .enter().append("rect")
 			.attr("width", x1.rangeBand())
 			.attr("height", function(d) { return height - y(d); })
-			.attr("x", function(d, i) { return x0(i); })
+			.attr("x", function(d, i) { return x0(i+1); })
 			.attr("y", function(d) { return y(d); });
 			
-		// Ad legend
+		// Add legend
 		var legend = svg.selectAll(".legend")
-			.data(['Funny','Cool','Useful'])
+			.data(['Training','Test'])
 		.enter().append("g")
 			.attr("class", "legend")
 			.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
