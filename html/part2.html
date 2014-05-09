@@ -37,38 +37,43 @@
                 <h1>Part 1: <small>Your Problem</small></h1>
 				<h2><small>agale & ahojsak </small></h2>
             </div>
-            <h2>All of the Graphs</h2>
-			<h3>Distribution of votes by vote type</h3>
-			<div class="chart" id="chart1"></div>
-			<h3>Distribution of combinations of votes by vote types</h3>
-			<div class="chart" id="chart2"></div>
-			<h3>Ratio of stars for each vote type</h3>
-			<div class="chart" id="chart3"></div>
-			<h3>Average stars for each vote type</h3>
-			<div class="chart" id="chart4"></div>
-			<h3>Word cloud for features correlated with vote types</h3>
-			<div class="chart" id="chart5"></div>
-			<h3>Training and Test Accuracy</h3>
-			<div class="chart" id="chart6"></div>
-            <h2>Problem</h2>
+			<h2>Problem</h2>
 			<p>
-
+				Yelp receives thousands of reviews each day, and it must decide which reviews to highlight on businesses pages. Identifying which reviews other users will find useful, cool, or funny, provides additional data which Yelp can use when deciding which reviews to surface on business pages.
 			</p>
 			<h2>Hypothesis</h2>
 			<p>
-			
+				Reviews that have gotten similar vote types (useful, funny, cool, and combinations of the three) tend to use similar language and give similar ratings, so a Naive Bayes classifier will be able to accurately predict the vote types that a new review will receive.
 			</p>
 			<h2>Data</h2>
 			<p>
-			
+				We are using the publicly available Yelp dataset. This dataset contains review information on businesses in the greater Phoenix, AZ metropolitan area.
+				<br>
+				We separate the dataset randomly into a training set and a test set. 30% of the reviews are put into the training set, and the other 70% are put into the test set.  Each set contains the text of each individual review, the number of stars the review gave the business, and the number of cool/useful/funny votes the review itself received.
 			</p>
 			<h2>Methodology</h2>
 			<p>
-
+			<ol>
+				<li>Implement a Naive Bayes classifier that predicts whether a review will be labeled as useful, funny, or cool, or some combination of the vote types</li>
+				<li>Find which words are correlated with which vote type</li>
+				<li>Test the classifier on the held out test set</li>
+				<li>Determine the accuracy of the classifier</li>
+				<li>Determine the words correlated with each vote type</li>
+			</ol>
 			</p>
 			<h2>Results</h2>
 			<p>
-
+	            <h2>All of the Graphs</h2>
+				<h3>Distribution of combinations of votes by vote types</h3>
+				<div class="chart" id="chart2"></div>
+				<h3>Ratio of stars for each vote type</h3>
+				<div class="chart" id="chart3"></div>
+				<h3>Average stars for each vote type</h3>
+				<div class="chart" id="chart4"></div>
+				<h3>Word cloud for features correlated with vote types</h3>
+				<div class="chart" id="chart5"></div>
+				<h3>Training and Test Accuracy</h3>
+				<div class="chart" id="chart6"></div>
 			</p>
 
         <div class="col-md-2"></div>
