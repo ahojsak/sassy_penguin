@@ -49,12 +49,14 @@
 			<p>
 				We are using the publicly available Yelp dataset. This dataset contains review information on businesses in the greater Phoenix, AZ metropolitan area.
 				<br>
-				We separate the dataset randomly into a training set and a test set. 30% of the reviews are put into the training set, and the other 70% are put into the test set.  Each set contains the text of each individual review, the number of stars the review gave the business, and the number of cool/useful/funny votes the review itself received.
+				We separate the dataset randomly into a training set and a test set. Thirty percent of the reviews are put into the training set, and the other seventy percent are put into the test set.  Each set contains the text of each individual review, the number of stars the review gave the business, and the number of cool/useful/funny votes the review itself received.
 				<br>
 				The following graph shows the distribution of reviews based on the number of stars each review gave the business and the type of votes the review received.
 
 				<h4>Distribution of combinations of votes by vote types</h4>
 				<div class="chart" id="chart2"></div>
+				<a href="img/chart2.jpg">Click for screenshot</a>
+				<p>From this graph, we noticed that there are some combinations of vote types that did not occur very frequently. For this reason, we realized that it would be more productive to look at the vote types independently. It is also interesting that amung 1-star reviews, there is not a huge difference in the combinations of vote types, while 5 star reviews are much more likely to not have any votes.</p>
 			</p>
 			<h2>Methodology</h2>
 			<p>
@@ -62,7 +64,7 @@
 				<li>We first performed feature extraction on the text of each review using the Bag-of-words model. CountVectorizer was used with a customized tokenizer to encode the unigram feature vectors. The tokenizer strips the text of all punctuation and applies porter stemming to each word. We also tried removing stop words and using bigram features, but both of these modifications resulted in worse classifier accuracy.</li>
 				<li>We then implemented a Multinomial Naive Bayes classifier that predicts whether a review will be labeled as useful, funny, or cool, or some combination of the vote types. A review is defined as funny, cool, etc. if the review received at least one vote for the specific category. 
 				<br>
-				We experimented with both the type of classifier and the size of the buckets. The Multinomial Naive Bayes classifier had better performance than the Binomial Naive Bayes, Gaussian Naive Bayes, Logisitc Regression, and SVM classifiers. We also experimented with having buckets of reviews with no votes, 1-9 votes, and 10+ votes for each category, as well as 0,1-2,3-4,5+ votes, and many other combinations. Ultimately, it was determined that having only two buckets - one for no votes and the other for 1+ votes - resulted in the most accurate predictions.  </li>
+				We experimented with both the type of classifier and the size of the buckets. The Multinomial Naive Bayes classifier had better performance than the Binomial Naive Bayes, Gaussian Naive Bayes, Logisitc Regression, and SVM classifiers. We also experimented with having buckets of reviews with no votes, 1-9 votes, and 10+ votes for each category, as well as 0,1-2,3-4,5+ votes, and many other combinations. Ultimately, it was determined that having only two buckets - one for no votes and the other for 1+ votes - resulted in the most accurate predictions. When we used more buckets, there was not enough data for a classifier to learn for the smaller buckets, but with a larger data set this might be a possibility for improvement.  </li>
 				
 			</ul>
 			</p>
@@ -70,14 +72,19 @@
 			<p>
 	         	<h3>Training and Test Accuracy</h3>
 	         	<p>
-	         		The classifier clearly predicted funny reviews most accurately with 75.03% test accuracy. Cool and useful votes were much harder to predict with 69.62% and 61.88% test accuracies respectively. This is expected, as language can be humorous, but coolness and usefulness are more subjective traits and depend more on the overall message of the text and less on the actual language used.
-	         	</p>
+	         		The classifier clearly predicted funny reviews most accurately with 75.03% test accuracy. Cool and useful votes were much harder to predict with 69.62% and 61.88% test accuracies respectively. This is expected, as language can be humorous, but coolness and usefulness are more subjective traits and depend more on the overall message of the text and less on the actual language used. The information we found would be useful to both review writers and to Yelp. Review writers could use a classifier to determine how likely it is that their review would be voted on favorably. This could help them tweak the language of the review to make it more appealing.
+					</p>
+					<p>
+					Yelp would also be able to make use of this information by detecting reviews that are likely to receive votes and surfacing them higher in the review lists. This way, users would see more funny, cool, and useful reviews first so they wouldn't have to scroll through unnecessary reviews. 
+					</p>
 				<div class="chart" id="chart6"></div>
+				<a href="img/chart6.jpg">Click for screenshot</a>
 				<h3>Average stars for each vote type</h3>
 				<p>
 					It appears to be that reviews that people find 'cool' tend to be more positive towards the business being reviewed, while people think that, on average, more negative reviews are funnier.
 				</p>
 				<div class="chart" id="chart4"></div>
+				<a href="img/chart4.jpg">Click for screenshot</a>
 
 
 				<h3>Ratio of stars for each vote type</h3>
@@ -85,8 +92,13 @@
 					Reviews that were both funny and useful contained the largest percentage of one star ratings of any combination, with almost half of the reviews giving a rating of only one or two stars. On the other hand, almost half of reviews marked as cool gave a rating of five stars and ~80% of them were four or five star reviews.
 				</p>
 				<div class="chart" id="chart3"></div>
+				<a href="img/chart3.jpg">Click for screenshot</a>
 				<h3>Word cloud for features correlated with vote types</h3>
+				<p>
+					From the classifier, we were able to gather lists of features that were highly correlated with a specific combination of vote types. From these lists of top features, we created a word cloud that features words that are associated with different combinations of vote types.
+				</p>
 				<div class="chart" id="chart5"></div>
+				<a href="img/chart5.jpg">Click for screenshot</a>
 			</p>
 
         <div class="col-md-2"></div>
