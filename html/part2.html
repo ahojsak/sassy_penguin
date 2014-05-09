@@ -50,30 +50,32 @@
 				We are using the publicly available Yelp dataset. This dataset contains review information on businesses in the greater Phoenix, AZ metropolitan area.
 				<br>
 				We separate the dataset randomly into a training set and a test set. 30% of the reviews are put into the training set, and the other 70% are put into the test set.  Each set contains the text of each individual review, the number of stars the review gave the business, and the number of cool/useful/funny votes the review itself received.
+				<br>
+				The following graph shows the distribution of reviews based on the number of stars each review gave the business and the type of votes the review received.
+
+				<h4>Distribution of combinations of votes by vote types</h4>
+				<div class="chart" id="chart2"></div>
 			</p>
 			<h2>Methodology</h2>
 			<p>
-			<ol>
-				<li>Implement a Naive Bayes classifier that predicts whether a review will be labeled as useful, funny, or cool, or some combination of the vote types</li>
-				<li>Find which words are correlated with which vote type</li>
-				<li>Test the classifier on the held out test set</li>
-				<li>Determine the accuracy of the classifier</li>
-				<li>Determine the words correlated with each vote type</li>
-			</ol>
+			<ul>
+				<li>We first performed feature extraction on the text of each review using the Bag-of-words model. CountVectorizer was used with a customized tokenizer to encode the unigram feature vectors. The tokenizer strips the text of all punctuation and applies porter stemming to each word. We also tried removing stop words and using bigram features, but both of these modifications resulted in worse classifier accuracy.</li>
+				<li>We then implemented a Multinomial Naive Bayes classifier that predicts whether a review will be labeled as useful, funny, or cool, or some combination of the vote types. A review is defined as funny, cool, etc. if the review received at least one vote for the specific category. 
+				<br>
+				We experimented with both the type of classifier and the size of the buckets. The Multinomial Naive Bayes classifier had better performance than the Binomial Naive Bayes, Gaussian Naive Bayes, Logisitc Regression, and SVM classifiers. We also experimented with having buckets of reviews with no votes, 1-9 votes, and 10+ votes for each category, as well as 0,1-2,3-4,5+ votes, and many other combinations. Ultimately, it was determined that having only two buckets - one for no votes and the other for 1+ votes - resulted in the most accurate predictions.  </li>
+				
+			</ul>
 			</p>
 			<h2>Results</h2>
 			<p>
-	            <h2>All of the Graphs</h2>
-				<h3>Distribution of combinations of votes by vote types</h3>
-				<div class="chart" id="chart2"></div>
-				<h3>Ratio of stars for each vote type</h3>
-				<div class="chart" id="chart3"></div>
+	         	<h3>Training and Test Accuracy</h3>
+				<div class="chart" id="chart6"></div>
 				<h3>Average stars for each vote type</h3>
 				<div class="chart" id="chart4"></div>
+				<h3>Ratio of stars for each vote type</h3>
+				<div class="chart" id="chart3"></div>
 				<h3>Word cloud for features correlated with vote types</h3>
 				<div class="chart" id="chart5"></div>
-				<h3>Training and Test Accuracy</h3>
-				<div class="chart" id="chart6"></div>
 			</p>
 
         <div class="col-md-2"></div>

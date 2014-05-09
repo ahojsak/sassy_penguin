@@ -28,6 +28,7 @@ d3.csv("data/chart2.txt",
 			.scale(x0)
 			.orient("bottom");
 
+
 		var yAxis = d3.svg.axis()
 			.scale(y)
 			.orient("left");
@@ -48,6 +49,13 @@ d3.csv("data/chart2.txt",
 			.attr("class", "x axis")
 			.attr("transform", "translate(0," + height + ")")
 			.call(xAxis);
+
+		svg.append("text")
+		    .attr("class", "x label")
+		    .attr("text-anchor", "end")
+		    .attr("x", width/2 + 60)
+		    .attr("y", height + 25)
+		    .text("# stars given by review");
 		
 		// Draw bars
 		svg.append("g").selectAll("g")
